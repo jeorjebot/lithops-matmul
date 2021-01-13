@@ -1,0 +1,9 @@
+# mac filesystem
+.DS_Store
+
+# rubbish
+prova.py
+examples
+
+# vscode settings
+.vscode
