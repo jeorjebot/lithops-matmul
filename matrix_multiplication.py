@@ -1,10 +1,10 @@
-from re import sub
 import numpy as np
 import sys
 import pickle
+import phe as paillier
 from lithops import FunctionExecutor, Storage
 
-def matrix_multiplication_plain(A_rows, B_cols, block_size):
+def matrix_multiplication(A_rows, B_cols, block_size):
     '''
         Matrix multiplication computed on row-blocks (matrix A) and column-blocks
         (matrix B), obtained from the storage. Each each resulting submatrix is
@@ -26,23 +26,53 @@ def dot_product_plain(namespace, row_block, col_block, row_index, col_index, sto
 
 def store_matrix_plain(dim1, dim2, block_size, axis='row'):
     '''
-        Matrix creation row-block by row-block, or column-block by column-block,
-        and storing on the storage.
+        The plain matrix is created row-block by row-block, or column-block by column-block,
+        depending on the axis parameter, and then stored in the storage.
     '''
     if(axis == 'column'):
         for index in range(int(dim2/block_size)):
             block = np.random.randint(10, size=(dim1, block_size))#.tolist()
             args = {'namespace': namespace, 'block': block, 'index': index, 'axis': axis}
-            fexec.call_async(store_plain, args)
+            fexec.call_async(store, args)
     else:
         for index in range(int(dim1/block_size)):
             block = np.random.randint(10, size=(block_size, dim2))#.tolist()
             args = {'namespace': namespace, 'block': block, 'index': index, 'axis': axis}
-            fexec.call_async(store_plain, args)
+            fexec.call_async(store, args)
     fexec.wait()
 
 
-def store_plain(namespace, block, index, axis, storage):
+def store_matrix_encrypted(dim1, dim2, block_size, axis='row'):
+    '''
+        The encrypted matrix is created row-block by row-block, or column-block by column-block,
+        depending on the axis parameter, and then stored in the storage.
+    '''
+    if(axis == 'column'):
+        for index in range(int(dim2/block_size)):
+            plain_block = np.random.randint(10, size=(dim1, block_size)).tolist()
+            encrypted_block = [[pubkey.encrypt(col) for col in plain_block[row]] for row in range(len(plain_block))]
+            block = np.array(encrypted_block)
+            args = {'namespace': namespace, 'block': block, 'index': index, 'axis': axis}
+            fexec.call_async(store, args)
+    else:
+        for index in range(int(dim1/block_size)):
+            plain_block = np.random.randint(10, size=(block_size, dim2)).tolist()
+            encrypted_block = [[pubkey.encrypt(col) for col in plain_block[row]] for row in range(len(plain_block))]
+            block = np.array(encrypted_block)
+            args = {'namespace': namespace, 'block': block, 'index': index, 'axis': axis}
+            fexec.call_async(store, args)
+    fexec.wait()
+
+
+def store(namespace, block, index, axis, storage):
+    storage.put_object(namespace, f'{axis}_{index}', pickle.dumps(block))
+
+
+# not used in the implementation
+def store_encrypted(namespace, block, index, axis, storage):
+    # encryption with paillier
+    encr_block_list = [[pubkey.encrypt(col) for col in block[row]] for row in range(len(block))]
+    block = np.array(encr_block_list)
     storage.put_object(namespace, f'{axis}_{index}', pickle.dumps(block))
 
 
@@ -93,19 +123,39 @@ if __name__ == '__main__':
 
         fexec = FunctionExecutor(mode='localhost')
         storage = Storage()
-        namespace = 'plain'
+        namespace = mode
 
-        # create and store matrix A on object storage
-        store_matrix_plain(A_rows, A_cols, block_size, axis='row')
+        if(mode == 'plain'):
+            # create and store PLAIN matrix A on object storage
+            store_matrix_plain(A_rows, A_cols, block_size, axis='row')
 
-        # create and store matrix B on object storage
-        store_matrix_plain(B_rows, B_cols, block_size, axis='column')
+            # create and store PLAIN matrix B on object storage
+            store_matrix_plain(B_rows, B_cols, block_size, axis='column')
 
-        # matrix multiplication
-        matrix_multiplication_plain(A_rows, B_cols, block_size)
+            # matrix multiplication
+            matrix_multiplication(A_rows, B_cols, block_size)
 
-        # just to be sure
-        test()
+            # just to be sure
+            test()
+
+        if(mode == 'encrypted'):
+            pubkey, privkey = paillier.generate_paillier_keypair()
+            
+            # create and store PLAIN matrix A on object storage
+            store_matrix_plain(A_rows, A_cols, block_size, axis='row')
+
+            # create and store ENCRYPTED matrix B on object storage
+            store_matrix_encrypted(B_rows, B_cols, block_size, axis='column')
+
+            # matrix multiplication
+            matrix_multiplication(A_rows, B_cols, block_size)
+
+            # just to be sure
+            test()
+
+        else:
+            print("[*] Mode not available")
+            print("[*] Usage: python matrix_multiplication.py mode A_rows A_cols B_rows B_cols block_size")
 
     else:
         print("[*] Usage: python matrix_multiplication.py mode A_rows A_cols B_rows B_cols block_size")
