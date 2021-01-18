@@ -1,10 +1,11 @@
 # mac filesystem
 .DS_Store
 
-# rubbish
+# trash
 prova.py
 examples
 paillier_example.py
+data/data.txt
 
 # vscode settings
 .vscode

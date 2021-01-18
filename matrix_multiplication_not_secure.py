@@ -49,18 +49,14 @@ def store_matrix_encrypted(dim1, dim2, block_size, axis='row'):
     '''
     if(axis == 'column'):
         for index in range(int(dim2/block_size)):
-            plain_block = np.random.randint(10, size=(dim1, block_size)).tolist()
-            encrypted_block = [[pubkey.encrypt(col) for col in plain_block[row]] for row in range(len(plain_block))]
-            block = np.array(encrypted_block)
+            block = np.random.randint(10, size=(dim1, block_size)).tolist()
             args = {'namespace': namespace, 'block': block, 'index': index, 'axis': axis}
-            fexec.call_async(store, args)
+            fexec.call_async(store_encrypted, args)
     else:
         for index in range(int(dim1/block_size)):
-            plain_block = np.random.randint(10, size=(block_size, dim2)).tolist()
-            encrypted_block = [[pubkey.encrypt(col) for col in plain_block[row]] for row in range(len(plain_block))]
-            block = np.array(encrypted_block)
+            block = np.random.randint(10, size=(block_size, dim2)).tolist()
             args = {'namespace': namespace, 'block': block, 'index': index, 'axis': axis}
-            fexec.call_async(store, args)
+            fexec.call_async(store_encrypted, args)
     fexec.wait()
 
 
@@ -110,7 +106,6 @@ if __name__ == '__main__':
 
     if len(sys.argv) == 7:
         try:
-            print(sys.argv)
             mode = sys.argv[1]
             A_rows = int(sys.argv[2])
             A_cols = int(sys.argv[3])
