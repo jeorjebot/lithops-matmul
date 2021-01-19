@@ -3,7 +3,8 @@ timefile_plain='./data/time_plain.txt'
 timefile_encr='./data/time_encr.txt'
 timefile_encr2='./data/time_encr2.txt'
 
-scale_values='1 2 5 10 20 50 100 200 500'
+#scale_values='1 2 5 10 20 50 100 200 500'
+scale_values='1 2 5 10'
 
 echo "\nStart computation"
 

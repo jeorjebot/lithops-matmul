@@ -3,10 +3,10 @@
 timefile='./data/time_dims.txt'
 scale_values='1 2 5 10'
 
-# aum dim esterne
-# aum dim interne
-# entrambe
-# entrambe con block_size
+# increase 'external' sizes
+# increase 'internal' sizes
+# increase both sizes
+# increase block_size parameter
 
 echo "row A - col B" >> $timefile
 for scale in $scale_values; do
