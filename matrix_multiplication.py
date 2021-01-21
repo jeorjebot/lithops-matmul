@@ -122,9 +122,12 @@ if __name__ == '__main__':
 
         check_parameters(A_rows, A_cols, B_rows, B_cols, block_size)
 
-        fexec = FunctionExecutor(mode='localhost')
+        #fexec = FunctionExecutor(mode='localhost')
+        fexec = FunctionExecutor(mode='serverless')
+
         storage = Storage()
-        namespace = mode
+        #namespace = mode
+        namespace = "lithops-matrix-multiplication"
 
         if(mode == 'plain'):
             # create and store PLAIN matrix A on object storage
@@ -137,7 +140,7 @@ if __name__ == '__main__':
             matrix_multiplication(A_rows, B_cols, block_size)
 
             # just to be sure
-            test()
+            #test()
 
         elif(mode == 'encrypted'):
             pubkey, privkey = paillier.generate_paillier_keypair()
@@ -152,7 +155,7 @@ if __name__ == '__main__':
             matrix_multiplication(A_rows, B_cols, block_size)
 
             # just to be sure
-            test()
+            #test()
 
         else:
             print("[*] Mode not available")
@@ -160,4 +163,3 @@ if __name__ == '__main__':
 
     else:
         print("[*] Usage: python matrix_multiplication.py mode A_rows A_cols B_rows B_cols block_size")
-

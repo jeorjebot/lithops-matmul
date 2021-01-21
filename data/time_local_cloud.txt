@@ -1,0 +1,33 @@
+plain cloud
+26.58
+68.37
+471.80
+Command exited with non-zero status 1
+2295.02
+encrypted cloud
+43.26
+130.77
+876.66
+Command exited with non-zero status 1
+4112.23
+scale plain cloud
+27.46
+22.78
+23.46
+24.69
+scale encrypted cloud
+38.14
+68.71
+289.78
+1159.60
+plain local
+20.21
+62.81
+427.83
+Command exited with non-zero status 1
+587.30
+scale plain local
+20.97
+24.88
+24.13
+25.33

@@ -1,9 +1,13 @@
+# lithops configuration
+.lithops_config
+
 # mac filesystem
 .DS_Store
 
 # trash
 prova.py
 data/data.txt
+output.txt
 
 # vscode settings
 .vscode

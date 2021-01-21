@@ -1,6 +1,6 @@
 #!/bin/sh
 
-timefile='./data/time_dims.txt'
+timefile='../data/time_dims.txt'
 scale_values='1 2 5 10'
 
 # increase 'external' sizes
